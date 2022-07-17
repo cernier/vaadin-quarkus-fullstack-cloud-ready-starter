@@ -1,18 +1,27 @@
 package com.example.starter.base.services;
 
 import com.example.starter.base.model.User;
-import com.vaadin.flow.server.VaadinSession;
-import org.apache.commons.lang3.BooleanUtils;
+import io.quarkus.oidc.IdToken;
+import io.quarkus.oidc.OidcSession;
+import org.apache.commons.lang3.StringUtils;
+import org.eclipse.microprofile.jwt.JsonWebToken;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.Optional;
 
 @ApplicationScoped
 public class SecurityService {
 
-  private static final String AUTHENTICATION_SESSION_KEY = SecurityService.class.getName();
+  @Inject
+  @IdToken
+  JsonWebToken idToken;
+
+  @Inject
+  OidcSession oidcSession;
 
   @Inject
   UserService userService;
@@ -22,28 +31,33 @@ public class SecurityService {
     if (noUserIsLogged()) {
       return Optional.empty();
     }
-
-    String username = "default";
+    String username = idToken.getSubject();
+    if (StringUtils.isEmpty(username)) {
+      return Optional.empty();
+    }
     User result = userService.findByUsernameOptional(username)
-        .orElseGet(() -> userService.saveOrUpdateWithUniqueUsername(
-            User.builder()
-                .username(username)
-                .build())
-        );
+        .orElseGet(() -> User.builder()
+            .username(username)
+            .build());
+    LocalDateTime issuedTokenDateTime = LocalDateTime.ofEpochSecond(idToken.getIssuedAtTime(), 0, ZoneOffset.UTC);
+    if (result.getLastUpdatedAt() != null && !result.getLastUpdatedAt().isBefore(issuedTokenDateTime)) {
+      return Optional.of(result);
+    }
+    result.setLastUpdatedAt(issuedTokenDateTime);
+    result.setFirstName(idToken.getClaim("given_name"));
+    result.setLastName(idToken.getClaim("family_name"));
+    result.setEmail(idToken.getClaim("email"));
+    result.setPictureURL(idToken.getClaim("picture"));
 
-    return Optional.of(result);
-  }
-
-  public void postLogin() {
-    VaadinSession.getCurrent().setAttribute(AUTHENTICATION_SESSION_KEY, Boolean.TRUE);
+    return Optional.of(userService.saveOrUpdateWithUniqueUsername(result));
   }
 
   public void logout() {
-    VaadinSession.getCurrent().setAttribute(AUTHENTICATION_SESSION_KEY, Boolean.FALSE);
+    oidcSession.logout().await().indefinitely();
   }
 
   private boolean noUserIsLogged() {
-    return BooleanUtils.isNotTrue((Boolean) VaadinSession.getCurrent().getAttribute(AUTHENTICATION_SESSION_KEY));
+    return oidcSession.getIdToken() == null;
   }
 
 }

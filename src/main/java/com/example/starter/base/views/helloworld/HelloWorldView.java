@@ -48,7 +48,8 @@ public class HelloWorldView extends HorizontalLayout {
     sayHello = new Button("Say hello");
     sayHello.addClickListener(e -> {
       Notification.show("Hello " + name.getValue() +
-          loggedUser.map(user -> " (logged user: " + user.getUsername() + ")").orElse(" (no logged user)"));
+          loggedUser.map(user -> " (logged user: " + user.getFirstName() + " " + user.getLastName() + ")")
+              .orElse(" (no logged user)"));
     });
 
     setMargin(true);

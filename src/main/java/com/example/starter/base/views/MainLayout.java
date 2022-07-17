@@ -134,8 +134,8 @@ public class MainLayout extends AppLayout implements RouterLayout {
     userMenu.setOpenOnClick(true);
 
     Services.get().getSecurityService().getLoggedUser().ifPresentOrElse(user -> {
-          String userDisplayName = user.getUsername();
-          Avatar avatar = new Avatar(userDisplayName);
+          String userDisplayName = String.format("%s %s", user.getFirstName(), user.getLastName());
+          Avatar avatar = new Avatar(userDisplayName, user.getPictureURL());
           avatar.addClassNames("me-xs");
 
           userMenu.addItem("Profile");
@@ -150,7 +150,7 @@ public class MainLayout extends AppLayout implements RouterLayout {
           Avatar avatar = new Avatar();
           avatar.addClassNames("me-xs");
 
-          userMenu.addItem("Sign in", e -> getUI().ifPresent(ui -> ui.getPage().setLocation("/post-login")));
+          userMenu.addItem("Sign in", e -> getUI().ifPresent(ui -> ui.getPage().setLocation("/login")));
 
           Span signIn = new Span("Not signed");
           signIn.addClassNames("font-medium", "text-s", "text-secondary");

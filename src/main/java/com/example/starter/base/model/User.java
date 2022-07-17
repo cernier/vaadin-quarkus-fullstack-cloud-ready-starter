@@ -6,6 +6,7 @@ import lombok.*;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.validation.constraints.NotEmpty;
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Getter
@@ -20,6 +21,16 @@ public class User extends AbstractEntity {
   @NotEmpty
   @Column(unique = true)
   private String username;
+
+  private String firstName;
+
+  private String lastName;
+
+  private String email;
+
+  private String pictureURL;
+
+  private LocalDateTime lastUpdatedAt;
 
   public static Optional<User> findByUsernameOptional(String username) {
     return find("username", username).singleResultOptional();
