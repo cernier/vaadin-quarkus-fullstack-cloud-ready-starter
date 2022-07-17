@@ -1,8 +1,8 @@
 package com.example.starter.base.views.helloworld;
 
 import com.example.starter.base.model.User;
-import com.example.starter.base.services.SecurityService;
 import com.example.starter.base.services.Services;
+import com.example.starter.base.services.security.SecurityService;
 import com.example.starter.base.views.MainLayout;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.notification.Notification;

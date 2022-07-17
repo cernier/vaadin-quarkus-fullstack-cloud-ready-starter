@@ -3,10 +3,10 @@ package com.example.starter.base.model;
 import com.google.common.base.Objects;
 import lombok.*;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
+import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 @Getter
@@ -31,6 +31,11 @@ public class User extends AbstractEntity {
   private String pictureURL;
 
   private LocalDateTime lastUpdatedAt;
+
+  @ElementCollection
+  @CollectionTable
+  @Enumerated(EnumType.STRING)
+  private List<Role> roles;
 
   public static Optional<User> findByUsernameOptional(String username) {
     return find("username", username).singleResultOptional();

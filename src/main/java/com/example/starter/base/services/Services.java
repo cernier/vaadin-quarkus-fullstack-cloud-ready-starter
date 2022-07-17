@@ -1,5 +1,6 @@
 package com.example.starter.base.services;
 
+import com.example.starter.base.services.security.SecurityService;
 import com.vaadin.flow.server.VaadinSession;
 import lombok.Getter;
 

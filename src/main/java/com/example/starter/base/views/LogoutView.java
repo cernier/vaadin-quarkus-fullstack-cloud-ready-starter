@@ -1,6 +1,6 @@
 package com.example.starter.base.views;
 
-import com.example.starter.base.services.SecurityService;
+import com.example.starter.base.services.security.SecurityService;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
