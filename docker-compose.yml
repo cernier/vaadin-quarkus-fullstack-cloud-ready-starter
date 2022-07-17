@@ -1,10 +1,41 @@
 services:
-  app:
+  www:
+    image: nginx
+    ports:
+      - 80:80
+    restart: always
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+    depends_on:
+      - app1
+      - app2
+      - app3
+      - app4
+
+  app1: &app
     build: .
     ports:
-      - 8080:8080
+      - 8080
     restart: always
     depends_on:
+      - db
+
+  app2:
+    <<: *app
+    depends_on:
+      - app1
+      - db
+
+  app3:
+    <<: *app
+    depends_on:
+      - app2
+      - db
+
+  app4:
+    <<: *app
+    depends_on:
+      - app3
       - db
 
   db:
