@@ -4,3 +4,37 @@ services:
     ports:
       - 8080:8080
     restart: always
+    depends_on:
+      - db
+
+  db:
+    image: postgres
+    ports:
+      - 5432
+    environment:
+      POSTGRES_DB: vaadin-quarkus
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    restart: always
+    volumes:
+      - db_volume:/var/lib/postgresql
+
+  db-admin:
+    image: dpage/pgadmin4
+    ports:
+      - 80:5050
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: root
+      PGADMIN_LISTEN_ADDRESS: 0.0.0.0
+      PGADMIN_LISTEN_PORT: 5050
+    restart: always
+    volumes:
+      - db_volume:/var/lib/pgadmin
+    depends_on:
+      - db
+
+volumes:
+  db_volume:
+    driver_opts:
+      size: 2Gi

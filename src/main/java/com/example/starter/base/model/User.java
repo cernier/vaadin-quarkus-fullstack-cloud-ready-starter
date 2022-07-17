@@ -16,6 +16,7 @@ import java.util.Optional;
 @NoArgsConstructor
 @ToString
 @Entity
+@Table(name = "AppUser")
 public class User extends AbstractEntity {
 
   @NotEmpty
